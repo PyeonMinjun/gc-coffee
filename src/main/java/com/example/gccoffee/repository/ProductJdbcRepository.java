@@ -7,20 +7,17 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.nio.ByteBuffer;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.example.gccoffee.JdbcUtils.toLocalDateTime;
 import static com.example.gccoffee.JdbcUtils.toUUID;
 
 @Repository
-public class Product_JdbcRepository implements ProductRepository {
+public class ProductJdbcRepository implements ProductRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    public Product_JdbcRepository(NamedParameterJdbcTemplate jdbcTemplate) {
+    public ProductJdbcRepository(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
