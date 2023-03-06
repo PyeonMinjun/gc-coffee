@@ -3,6 +3,8 @@ package com.example.gccoffee.repository;
 import com.example.gccoffee.model.Category;
 import com.example.gccoffee.model.Product;
 //import jdk.jfr.Category;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -39,26 +41,58 @@ public class ProductJdbcRepository implements ProductRepository {
 
     @Override
     public Product update(Product product) {
-        return null;
+         var update= jdbcTemplate.update(
+                "UPDATE products SET product_name = :productName, category = :category , price = :price, description = :description, created_at= :createdAt, updated_at= :updatedAt" +
+                       " WHERE product_id = UUID_TO_BIN(:productId)",
+                toParamMap(product)
+        );
+         if(update != 1) {
+             throw new RuntimeException("Noting was update");
+         }
+    return product;
+
     }
 
     @Override
     public Optional<Product> findById(UUID productId) {
-        return Optional.empty();
+        try{
+            return Optional.ofNullable(
+                    jdbcTemplate.queryForObject("SELECT * FROM products WHERE product_id = UUID_TO_BIN(:productId) ",
+                            Collections.singletonMap("productId", productId.toString().getBytes()), productRowMapper)
+            );
+
+        } catch (EmptyResultDataAccessException e){
+            return Optional.empty();
+        }
     }
 
     @Override
     public Optional<Product> findByName(String productName) {
-        return Optional.empty();
+        try{
+            return Optional.ofNullable(
+                    jdbcTemplate.queryForObject("SELECT * FROM products WHERE product_name = :productName",
+                            Collections.singletonMap("productName", productName), productRowMapper)
+            );
+
+        } catch (EmptyResultDataAccessException e){
+            return Optional.empty();
+        }
     }
 
     @Override
     public List<Product> findByCategory(Category category) {
-        return null;
+        return jdbcTemplate.query(
+                "SELECT * FROM products WHERE category = :category",
+                Collections.singletonMap("category", category.toString()),
+                productRowMapper
+        );
     }
-
     @Override
     public void deleteAll() {
+        jdbcTemplate.update("DELETE FROM products", Collections.emptyMap());
+    }
+
+    public void clearStore()        {
 
     }
 
