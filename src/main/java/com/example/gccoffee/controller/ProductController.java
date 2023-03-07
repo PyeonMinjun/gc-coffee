@@ -1,12 +1,11 @@
 package com.example.gccoffee.controller;
 
-import com.example.gccoffee.model.Product;
 import com.example.gccoffee.service.ProductService;
 import org.springframework.stereotype.Controller;
+//import lombok.AllArgsConstructor;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 public class ProductController {
@@ -18,9 +17,24 @@ public class ProductController {
     }
 
     @GetMapping("/products")
-    public String productsPage(Model model){
+    public String productsPage(Model model) {
         var products = productService.getAllProducts();
         model.addAttribute("products", products);
         return "product-list";
+    }
+
+    @GetMapping("new-product")
+    public String newProductPage() {
+        return "new-product";
+    }
+
+    @PostMapping("/products")
+    public String newProduct(CreateProductRequest creatProuductRequest) {
+        productService.createProduct(
+                creatProuductRequest.productName(),
+                creatProuductRequest.category(),
+                creatProuductRequest.price(),
+                creatProuductRequest.description());
+        return "redirect:/products";
     }
 }
